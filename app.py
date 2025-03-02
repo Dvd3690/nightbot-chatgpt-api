@@ -7,11 +7,11 @@ app = Flask(__name__)
 # configure Gemini API key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET"], strict_slashes=False)
 def home():
     return "API is working!"
 
-@app.route("/chat", methods=["GET"])
+@app.route("/chat", methods=["GET"], strict_slashes=False)
 def chat():
     user_input = request.args.get("message")
     if not user_input:
@@ -23,6 +23,11 @@ def chat():
         return jsonify({"response": response.text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# debug: print all registered routes
+print("Registered Routes:")
+for rule in app.url_map.iter_rules():
+    print(rule)
 
 if __name__ == "__main__":
     app.debug = True  # enable debug mode
