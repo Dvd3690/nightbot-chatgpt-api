@@ -12,16 +12,16 @@ def home():
 
 @app.route("/chat", methods=["GET"])
 def chat():
-    user_input = request.args.get("message", "")
+    user_input = request.args.get("message")
     if not user_input:
         return jsonify({"response": "Please provide a message"}), 400
 
     model = genai.GenerativeModel("gemini-pro")
-    response = model.generate_content([user_input])
+    response = model.generate_content(user_input)
 
     return jsonify({"response": response.text})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))  
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
     
