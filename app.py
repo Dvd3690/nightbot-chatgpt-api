@@ -4,6 +4,7 @@ import os
 
 app = Flask(__name__)
 
+# configure Gemini API key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.route("/", methods=["GET"])
@@ -16,12 +17,15 @@ def chat():
     if not user_input:
         return jsonify({"response": "Please provide a message"}), 400
 
-    model = genai.GenerativeModel("gemini-pro")
-    response = model.generate_content(user_input)
-
-    return jsonify({"response": response.text})
+    try:
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content(user_input)
+        return jsonify({"response": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
+    app.debug = True  # enable debug mode
+    port = int(os.environ.get("PORT", 8080))  # let render handle port
     app.run(host="0.0.0.0", port=port)
     
