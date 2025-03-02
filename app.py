@@ -23,12 +23,22 @@ def chat():
         # use latest gemini-1.5-flash (free & updated)
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            f"Summarize this in less than 380 characters, keeping full sentences: {user_input}"
+            f"Summarize the following in **less than 380 characters**. Ensure the summary is **concise, meaningful, and does not cut off mid-sentence**: {user_input}"
         )
 
-        cleaned_response = " ".join(response.text.split()) if response.text else "i couldn't generate a response."
+        # ensure the response is within 380 chars & ends at a full sentence
+        full_response = response.text.strip()
+        if len(full_response) > 380:
+            sentences = full_response.split(". ")
+            trimmed_response = ""
+            for sentence in sentences:
+                if len(trimmed_response) + len(sentence) + 2 <= 380:  # +2 for ". "
+                    trimmed_response += sentence + ". "
+                else:
+                    break
+            full_response = trimmed_response.strip()
 
-        return f"{username}: {cleaned_response}"
+        return f"{username}: {full_response}"
     except Exception as e:
         return str(e), 500
 
