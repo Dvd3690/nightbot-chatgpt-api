@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# configure gemini api key
+# configure latest gemini api key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.route("/", methods=["GET"], strict_slashes=False)
@@ -20,15 +20,13 @@ def chat():
         return "please provide a message", 400
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        # use latest gemini-1.5-flash (free & updated)
+        model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            f"Summarize this in 380 characters or less: {user_input}"
+            f"Summarize this in less than 380 characters, keeping full sentences: {user_input}"
         )
 
-        trimmed_response = response.text[:380] if response.text else "i couldn't generate a response."
-
-        # remove \n and extra spaces
-        cleaned_response = " ".join(trimmed_response.split())
+        cleaned_response = " ".join(response.text.split()) if response.text else "i couldn't generate a response."
 
         return f"{username}: {cleaned_response}"
     except Exception as e:
