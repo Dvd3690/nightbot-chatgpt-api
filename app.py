@@ -24,10 +24,11 @@ def chat():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# debug: print all registered routes
-print("Registered Routes:")
-for rule in app.url_map.iter_rules():
-    print(rule)
+# debug: force flask to print all routes
+with app.app_context():
+    print("Registered Routes:")
+    for rule in app.url_map.iter_rules():
+        print(rule)
 
 if __name__ == "__main__":
     app.debug = True  # enable debug mode
